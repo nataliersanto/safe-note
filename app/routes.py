@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from app.encryption import encrypt_text, decrypt_text
+from passlib.hash import bcrypt
 import datetime
 
 bp = Blueprint("routes", __name__)
@@ -17,7 +18,8 @@ def register():
         return jsonify({"msg":"username & password required"}), 400
     if username in USERS:
         return jsonify({"msg":"user exists"}), 400
-    USERS[username] = password  # NOTE: for demo only, hash in real app!
+    hashed = bcrypt.hash(password)
+    USERS[username] = hashed
     NOTES[username] = {}
     return jsonify({"msg":"registered"}), 200
 
@@ -26,8 +28,9 @@ def login():
     data = request.get_json()
     username = data.get("username")
     password = data.get("password")
-    if USERS.get(username) != password:
-        return jsonify({"msg":"bad credentials"}), 401
+    stored_hash = USERS.get(username)
+    if not stored_hash or not bcrypt.verify(password, stored_hash):
+        return jsonify({"msg": "bad credentials"}), 401
     token = create_access_token(identity=username, expires_delta=datetime.timedelta(hours=1))
     return jsonify({"access_token": token}), 200
 
