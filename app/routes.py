@@ -1,31 +1,31 @@
-    from flask import Blueprint, request, jsonify
-    from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-    from app.encryption import encrypt_bytes, decrypt_bytes
-    from app.models import upload_file_bytes, save_note, get_note
-    from passlib.hash import bcrypt
-    import datetime
-    import os
+from flask import Blueprint, request, jsonify
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from app.encryption import encrypt_bytes, decrypt_bytes
+from app.models import upload_file_bytes, save_note, get_note
+from passlib.hash import bcrypt
+import datetime
+import os
 
 
-    bp = Blueprint("routes", __name__)
+bp = Blueprint("routes", __name__)
 
-    USERS = {}     # username -> password (hashed in real app)
-    NOTES = {}     # username -> {title: encrypted_content}
+USERS = {}     # username -> password (hashed in real app)
+NOTES = {}     # username -> {title: encrypted_content}
 
-    @bp.route("/register", methods=["POST"])
-    def register():
-        data = request.get_json()
-        username = data.get("username")
-        password = data.get("password")
-        if not username or not password:
-            return jsonify({"msg":"username & password required"}), 400
-        if username in USERS:
-            return jsonify({"msg":"user exists"}), 400
-        truncated_password = password.encode('utf-8')[:72]
-        hashed = bcrypt.hash(truncated_password)
-        USERS[username] = hashed
-        NOTES[username] = {}
-        return jsonify({"msg":"registered"}), 200
+@bp.route("/register", methods=["POST"])
+def register():
+    data = request.get_json()
+    username = data.get("username")
+    password = data.get("password")
+    if not username or not password:
+        return jsonify({"msg":"username & password required"}), 400
+    if username in USERS:
+        return jsonify({"msg":"user exists"}), 400
+    truncated_password = password.encode('utf-8')[:72]
+    hashed = bcrypt.hash(truncated_password)
+    USERS[username] = hashed
+    NOTES[username] = {}
+    return jsonify({"msg":"registered"}), 200
 
     @bp.route("/login", methods=["POST"])
     def login():
