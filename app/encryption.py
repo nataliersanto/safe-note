@@ -9,8 +9,10 @@ if not KEY:
 
 cipher = Fernet(KEY.encode() if isinstance(KEY, str) else KEY)
 
-def encrypt_text(plaintext: str) -> str:
-    return cipher.encrypt(plaintext.encode()).decode()
+def encrypt_bytes(data: bytes) -> bytes:
+    """Encrypt raw bytes, returns encrypted bytes"""
+    return cipher.encrypt(data)
 
-def decrypt_text(token: str) -> str:
-    return cipher.decrypt(token.encode()).decode()
+def decrypt_bytes(data: bytes) -> bytes:
+    """Decrypt encrypted bytes, returns original bytes"""
+    return cipher.decrypt(data)
