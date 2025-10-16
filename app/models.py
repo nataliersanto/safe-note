@@ -19,7 +19,8 @@ def save_note(username, title, encrypted_text):
     """Save a note for a user."""
     if USE_DYNAMODB:
         table.put_item(Item={
-            'pk': f"{username}#{title}",  # composite key
+            'username': username,
+            'title': title,
             'content': encrypted_text
         })
     else:
@@ -30,12 +31,12 @@ def save_note(username, title, encrypted_text):
 def get_note(username, title):
     """Retrieve a note for a user."""
     if USE_DYNAMODB:
-        resp = table.get_item(Key={'pk': f"{username}#{title}"})
+        resp = table.get_item(Key={'username': username, 'title': title})
         item = resp.get("Item")
         return item.get("content") if item else None
     else:
         return NOTES.get(username, {}).get(title)
-
+        
 # s3 helpers
 
 s3 = boto3.client("s3")
