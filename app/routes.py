@@ -45,11 +45,9 @@ def create_note():
     data = request.get_json()
     title = data.get("title")
     content = data.get("content")
-    print("DEBUG: content =", content, type(content))  # <-- this should show <class 'str'>
     if not title or not content:
         return jsonify({"msg":"title and content required"}), 400
-
-    # Convert string to bytes before encryption
+    # convert string to bytes before encryption
     encrypted = encrypt_bytes(content.encode("utf-8"))
     save_note(username, title, encrypted)
     return jsonify({"msg":"saved"}), 200
