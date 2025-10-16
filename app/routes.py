@@ -6,6 +6,7 @@ from passlib.hash import bcrypt
 import datetime
 import os
 
+
 bp = Blueprint("routes", __name__)
 
 USERS = {}     # username -> password (hashed in real app)
@@ -20,7 +21,8 @@ def register():
         return jsonify({"msg":"username & password required"}), 400
     if username in USERS:
         return jsonify({"msg":"user exists"}), 400
-    hashed = bcrypt.hash(password)
+    truncated_password = password.encode('utf-8')[:72]
+    hashed = bcrypt.hash(truncated_password)
     USERS[username] = hashed
     NOTES[username] = {}
     return jsonify({"msg":"registered"}), 200
@@ -31,7 +33,7 @@ def login():
     username = data.get("username")
     password = data.get("password")
     stored_hash = USERS.get(username)
-    if not stored_hash or not bcrypt.verify(password, stored_hash):
+    if not stored_hash or not bcrypt.verify(password.encode('utf-8')[:72], stored_hash):
         return jsonify({"msg": "bad credentials"}), 401
     token = create_access_token(identity=username, expires_delta=datetime.timedelta(hours=1))
     return jsonify({"access_token": token}), 200
@@ -43,9 +45,12 @@ def create_note():
     data = request.get_json()
     title = data.get("title")
     content = data.get("content")
+    print("DEBUG: content =", content, type(content))  # <-- this should show <class 'str'>
     if not title or not content:
         return jsonify({"msg":"title and content required"}), 400
-    encrypted = encrypt_bytes(content)
+
+    # Convert string to bytes before encryption
+    encrypted = encrypt_bytes(content.encode("utf-8"))
     save_note(username, title, encrypted)
     return jsonify({"msg":"saved"}), 200
 
@@ -56,7 +61,7 @@ def get_note_route(title):
     enc = get_note(username, title)
     if not enc:
         return jsonify({"msg":"not found"}), 404
-    dec = decrypt_text(enc)
+    dec = decrypt_bytes(enc).decode("utf-8")
     return jsonify({"title": title, "content": dec}), 200
 
 @bp.route("/notes/<title>/upload", methods=["POST"])
@@ -79,3 +84,7 @@ def upload_file(title):
     upload_file_bytes(bucket, key, encrypted_bytes)
 
     return jsonify({"msg": "File uploaded successfully"}), 200
+
+@bp.route("/")
+def index():
+    return "SafeNote is running!"
