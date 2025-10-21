@@ -110,7 +110,8 @@ Natalie Santo - natalierosesanto@gmail.com
 
 Wireshark capture showing SYN packets from a local host to a remote IP, used to analyze connection attempts detected by Suricata
 
-<img width="3024" height="1964" alt="Wireshark example edited" src="https://github.com/user-attachments/assets/5dd29a7f-8e89-447c-a384-04f72be7e037" />
+<img width="3014" height="1638" alt="Wireshark example edited" src="https://github.com/user-attachments/assets/2195355f-f934-4b0d-b35f-ae829aa32d27" />
+
 
 
 
