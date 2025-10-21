@@ -28,14 +28,14 @@ The project also includes an **AWS setup guide** to deploy the backend securely.
 
 Follow these steps to get a local copy running on your machine.  
 
-## Prerequisites
+### Prerequisites
 
 - Python 3.12+  
 - pip (Python package manager)  
 - Virtual environment (`venv`) recommended  
 - AWS credentials configured if using DynamoDB/S3
 
-## Installation
+### Installation
 
 1. Clone the repository:
 
