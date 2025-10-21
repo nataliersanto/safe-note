@@ -106,15 +106,15 @@ curl -X GET http://127.0.0.1:5000/notes/MyFirstNote \
 
 Natalie Santo - natalierosesanto@gmail.com
 
-# Usage
+## Demonstration
 
-## Wireshark capture showing SYN packets from a local host to a remote IP — used to analyze connection attempts detected by Suricata.
+Wireshark capture showing SYN packets from a local host to a remote IP, used to analyze connection attempts detected by Suricata
 
 <img width="3024" height="1964" alt="Wireshark example edited" src="https://github.com/user-attachments/assets/5dd29a7f-8e89-447c-a384-04f72be7e037" />
 
 
 
-## Examples of CURL requests
+Examples of CURL requests
 
 <img width="3016" height="532" alt="CURL example - Edited" src="https://github.com/user-attachments/assets/cc8e4653-7174-43b4-a987-7b62100f2413" />
 
