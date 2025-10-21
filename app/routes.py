@@ -63,12 +63,12 @@ def create_note():
     content = data.get("content")
     if not title or not content:
         return jsonify({"msg": "title and content required"}), 400
-    encrypted = encrypt_bytes(content.encode("utf-8"))
+    encrypted_bytes = encrypt_bytes(content.encode("utf-8"))
     notes_table.put_item(
         Item={
-            "username": username,    # partition key
-            "title": title,          # sort key
-            "content": encrypted.hex(),  # store bytes as hex string
+            "username": username,
+            "title": title,
+            "content": encrypted_bytes.hex(),  # store as hex string
             "created_at": str(datetime.datetime.utcnow())
         }
     )
@@ -78,13 +78,22 @@ def create_note():
 @jwt_required()
 def get_note_route(title):
     username = get_jwt_identity()
-    resp = notes_table.get_item(Key={"username": username, "title": title})
-    item = resp.get("Item")
+    item = get_note(username, title)
     if not item:
         return jsonify({"msg": "not found"}), 404
-    encrypted = bytes.fromhex(item["content"])
-    decrypted = decrypt_bytes(encrypted).decode("utf-8")
-    return jsonify({"title": title, "content": decrypted}), 200
+    encrypted_bytes = item["content"]
+    if isinstance(encrypted_bytes, str):
+        try:
+            encrypted_bytes = bytes.fromhex(encrypted_bytes)
+        except ValueError:
+            # fallback for legacy base64 encoding
+            encrypted_bytes = base64.b64decode(encrypted_bytes)
+    decrypted_content = decrypt_bytes(encrypted_bytes).decode("utf-8")
+    return jsonify({
+        "title": title,
+        "content": decrypted_content,
+        "created_at": item.get("created_at")
+    }), 200
 
 @bp.route("/notes/<title>/upload", methods=["POST"])
 @jwt_required()
