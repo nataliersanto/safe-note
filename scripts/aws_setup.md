@@ -71,8 +71,8 @@ sudo apt install nginx -y
 # 3. Install Certbot
 sudo apt install certbot python3-certbot-nginx -y
 
-# 4. Run Certbot for your domain
-sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+# 4. Run Certbot for the domain
+sudo certbot --nginx -d safenoteapp.com -d www.safenoteapp.com
 
 # 5. Verify certificate
 sudo certbot certificates
